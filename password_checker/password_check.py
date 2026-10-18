@@ -3,11 +3,11 @@ problems = []
 test_cases = {
     "Empty password" : "",
     "Password too short" : "admin",
-    "No uppercase" : "ord123",
-    "No number" : "Password",
-    "No special character" : "Password123" ,
-    "Whitespace in the beginning/end" : " password123! ",
-    "Proper password" : "Passwor#d123!",
+    "No uppercase" : "password123!",
+    "No number" : "PasswordTest!",
+    "No special character" : "Password1234" ,
+    "Whitespace in the beginning/end" : " Password123! ",
+    "Proper password" : "VeryStrongPassword2026!",
 }
 
 def validate_password(password, min_length):   
@@ -21,7 +21,7 @@ def validate_password(password, min_length):
         problems.append(f"Password has less than {min_length} characters")
    
     if password.startswith(" ") or password.endswith(" "):
-        problems.append("Whitespace detected, make sure the password doesn'nt have whitespaces")
+        problems.append("Whitespace detected, make sure the password doesn't have whitespaces")
    
     if not any(char.isdigit() for char in password):
         problems.append("The password should contain a number")
