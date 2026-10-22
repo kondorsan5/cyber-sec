@@ -1,8 +1,8 @@
 {
-  "min_length": 14,
+  "min_length": 16,
   "require_lower": true,
   "require_upper": true,
-  "require_digit": true,
+  "require_digit": false,
   "require_special": true,
   "special_chars": "!@#$%^&*"
 }
