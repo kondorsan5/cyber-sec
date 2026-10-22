@@ -110,15 +110,6 @@ def print_report(arg, count, problems):
             print("Password NOK")
 
 def main():
-    # args = get_args()
-    # validator = PasswordValidator()
-
-    # if args.config:
-    #     config = load_config(args.config)
-    #     build_policy(config)
-
-
-
     args = get_args()
     config = load_config(args.config)
     policy = build_policy(args, config)
