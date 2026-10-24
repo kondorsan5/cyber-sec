@@ -1,0 +1,48 @@
+{
+  "filename": "/home/kali/labs/log-parser-lab/output/ssh-bruteforce_report.json",
+  "danger_threshold": 3,
+  "analyzed_logs": 500,
+  "failed_login_logs": 402,
+  "matched_logs": 399,
+  "unmatched_logs": 3,
+  "omitted_logs": 98,
+  "unique_ips": 13,
+  "ip_attempts_total": {
+    "203.0.113.77": 155,
+    "203.0.113.10": 124,
+    "198.51.100.61": 45,
+    "203.0.113.88": 32,
+    "192.0.2.120": 18,
+    "198.51.100.90": 9,
+    "192.0.2.200": 4,
+    "198.51.100.23": 3,
+    "192.0.2.31": 3,
+    "192.0.2.55": 2,
+    "198.51.100.112": 2,
+    "192.0.2.42": 1,
+    "203.0.113.130": 1
+  },
+  "ips_over_threshold": [
+    "203.0.113.77",
+    "203.0.113.10",
+    "198.51.100.61",
+    "203.0.113.88",
+    "192.0.2.120",
+    "198.51.100.90",
+    "192.0.2.200"
+  ],
+  "ips_ico": [
+    "203.0.113.10",
+    "203.0.113.77",
+    "198.51.100.50"
+  ],
+  "ips_crossreferenced_ico": [
+    "203.0.113.10",
+    "203.0.113.77"
+  ],
+  "ips_ico_cross_over_threshold": [
+    "203.0.113.10",
+    "203.0.113.77"
+  ],
+  "note": "This report is an analytical signal, not automatic confirmation of a security incident"
+}
