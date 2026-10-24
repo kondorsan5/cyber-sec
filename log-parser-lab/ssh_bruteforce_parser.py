@@ -28,7 +28,9 @@ report = {
 }
 
 web_report = {
-    
+    "ip_404" : {},
+    "path_404" : {},
+    "status_count" : {}
 }
 
 threshold = 3
@@ -80,7 +82,7 @@ def analyze_log(lines):
     report["unique_ips"] = len(counter)
 
     sorted_counter = sort_counter(counter)
-
+    
     for ip, attempts in sorted_counter.items():
         if  attempts > threshold:
             report["ips_over_threshold"].append(ip)
@@ -100,15 +102,33 @@ def analyze_ioc(lines):
                     report["ips_ico_cross_over_threshold"].append(ip)
 
 def analyze_web_sample(lines):
-    counter_404  = Counter()
+    ip_404_counter = Counter()
+    path_404_counter = Counter()
+    status_counter = Counter()
+
     for line in lines:
-        match = ip_pattern.search(line)
-        if match:
-            ip_address = match.group(0)
-            counter_404[ip_address]
-            if "404" in line:
-                counter_404[ip_address] += 1
-    print(counter_404)
+        parts = line.split('"')
+        
+        prefix = parts[0].split()
+        request = parts[1].split()
+        response = parts[2].split()
+        
+        ip = prefix[0]
+        method = request[0]
+        status = response[0]
+        path = request[1]
+        user_agent = parts[5]
+
+        
+        if status == '404':
+            ip_404_counter[ip] += 1
+            path_404_counter[path] += 1
+            status_counter[status] += 1
+
+    web_report["ip_404"] = dict(ip_404_counter)
+    web_report["path_404"] = dict(path_404_counter)
+    web_report["status_count"] = dict(status_counter)
+
 
 def output_json_report(report_path, report):
     try: 
@@ -142,7 +162,25 @@ def output_csv_report(report_path, report):
             print(f"Error saving CSV file: {error}")                    
 
 
-def print_pandas(report_path):
+def output_web_csv_report(output_path):
+    try:
+        with open(output_path, "w", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow([
+                "path",
+                "404_count",
+            ])
+
+            for path, count in web_report["path_404"].items():
+                writer.writerow([
+                    path,
+                    count
+                ])
+
+    except (OSError, TypeError, ValueError, IsADirectoryError) as error:
+            print(f"Error saving CSV file: {error}")   
+
+def pandas_report_log(report_path, report_output):
     df = pd.read_csv(report_path)
     
     print("\nFirst Records")
@@ -160,7 +198,7 @@ def print_pandas(report_path):
     print("\nFiltered records - with alert")
     alerts = df[df["alert"] == True]
     print(alerts)
-    alerts.to_csv("output/ip-alerts.csv")
+    alerts.to_csv(report_output)   
 
 def main():
     log_path = Path("data") / "auth-sample.log"
@@ -169,18 +207,28 @@ def main():
  
     json_report_path = Path("output") / "ssh-bruteforce_report.json"
     csv_report_path = Path("output") / "ssh-bruteforce_report.csv"
+    ioc_alert_path = Path("output") / "ioc-alerts.csv"
+    web_report_path = Path("output") / "web-report-path.csv"
 
     report["filename"] = str(json_report_path.resolve())
     report["danger_threshold"] = threshold
 
     process_file(log_path, analyze_log)
     process_file(ioc_path, analyze_ioc)
-    process_file(web_log_path, analyze_web_sample)
+
 
     output_json_report(json_report_path, report)
     output_csv_report(csv_report_path, report)
+        
+    pandas_report_log(csv_report_path, ioc_alert_path)
 
-    print_pandas(csv_report_path)
+    # Web File analaysis
+    process_file(web_log_path, analyze_web_sample)
+    output_web_csv_report(web_report_path)
+    df = pd.read_csv(web_report_path)
+    sorted_df = df.sort_values("404_count", ascending=False)
+    print("\nTOP10 paths with 404 status")
+    print(sorted_df.head(10))
 
 if __name__ == "__main__":
     main()
