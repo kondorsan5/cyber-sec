@@ -35,7 +35,6 @@ web_report = {
 
 threshold = 3
 ip_pattern = re.compile(r"\d+\.\d+\.\d+\.\d+")
-http_method = re.compile(r"")
 
 def process_file(log_path, analyzer):
     if not log_path.exists():
